@@ -2,219 +2,280 @@
 name: swim-workout
 description: >
   Use this skill whenever building, drafting, formatting, or editing a competitive swim
-  practice or workout. Triggers include any request to write a practice, build a set,
-  format a workout for Commit Swimming, plan a training week, or design a session for
-  any group or phase. Always read this skill before generating any workout output —
-  even partial sets, warm-ups, or single main sets. This skill governs formatting,
-  drill selection, set structure, volume targets, and Commit parsing conventions.
+  practice or workout for SetForge. Triggers include any request to generate a practice,
+  build a set, format a workout for Commit Swimming, or produce session output from
+  SetForge app parameters. Always read this SKILL.md fully before generating any output —
+  this skill governs the output contract, Commit formatting, set design, drill selection,
+  and energy zone logic. Do not generate any workout content without consulting this skill.
 ---
 
-# Swim Workout Skill
+# SetForge Swim Workout Skill
 
 ## Overview
 
-This skill governs all competitive swim practice design and formatting. It ensures
-consistent, predictable output across sessions — correct Commit formatting, approved
-drill vocabulary, and structurally sound set design aligned with Swimming Canada's
-AAD/LTAD framework.
+This skill governs all workout generation for SetForge — a native iPhone app that sends
+a fully formed, one-shot prompt to Claude. There is no conversation loop. The output goes
+directly to a display view and then to Commit Swimming. Everything must be correct on the
+first pass.
 
-Always read this SKILL.md fully before writing any workout content.
-For drill reference, read `references/drills.md`.
-For set templates, read `references/set-templates.md`.
+Read this file fully. Then read the reference files as directed below.
+
+**Always read before generating:**
+- `references/drills.md` — approved drill library (S/A/B/C tiers); no other drills permitted
+- `references/set-templates.md` — zone-organized set patterns; draw from these when designing sets
+- `references/energy-zones.md` — full zone design guidelines; read when zone guidance is needed
 
 ---
 
 ## 1. Context
 
-**Primary group**: Velocity (Ben's group)  
-**Pool**: 25-metre  
-**Session length**: 90 minutes, water only (dryland handled separately)  
-**Schedule**: Monday, Tuesday, Wednesday, Friday, Saturday  
-**Framework**: Swimming Canada AAD/LTAD — Train to Train (T2T)  
-**Platform**: Commit Swimming (all output must parse correctly — see Section 3)  
-**Equipment available**: fins, snorkel, paddles, kickboard, pull buoy  
+**Group**: Velocity (competitive youth, Swimming Canada T2T framework)
+**Pool**: 25-metre
+**Session length**: defined by the app prompt (`Total time` field)
+**Schedule**: Monday, Tuesday, Wednesday, Friday, Saturday
+**Platform**: Commit Swimming — all output must parse correctly (see Section 3)
+**Equipment**: fins, snorkel, paddles, kickboard, pull buoy
 
 ---
 
-## 2. Practice Structure
+## 2. Input Contract
 
-Every session follows this arc:
+SetForge always sends a complete, structured prompt. Never ask for clarification.
+Never request missing fields. Never assume or default volume.
+The prompt is the complete input — treat it as authoritative.
 
-**Total session volume must be explicitly provided or confirmed before building a workout.
-If not given, ask before proceeding. Do not assume or default to any target.**
+### 2.1 Prompt fields — always present
 
-Once volume is established, distribute it approximately as:
+**SESSION PARAMETERS**
+- `Total volume` — metres; use exactly as given, distribute per Section 4
+- `Total time` — minutes; hard limit (already adjusted for time-block sections)
+- `Training phase` — one of: `GPP` · `SPP` · `Competition` · `Taper`
+- `Day` — one of: `Monday` · `Tuesday` · `Wednesday` · `Friday` · `Saturday`
+
+**STROKE & INTENSITY**
+- `Primary stroke focus` — one of: `FR` · `BK` · `BR` · `FLY` · `IM`
+- `Technical focus options` — zero or more, comma-separated (e.g. `EVF / catch, Body rotation`)
+- `Focus note` — optional free-text coaching note; include as a coaching note in the output if present
+- `Intensity range` — start and end, e.g. `easy to strong`
+
+**SECTION STRUCTURE**
+- Lists active sections in order; Warm Up always first, Cool Down always last
+- Each section is either:
+  - `active, generate content` — Claude generates this section fully
+  - `active, time block only — N min` — coach-managed; include a placeholder line only (see 2.2)
+- Inactive sections are omitted entirely from the prompt
+
+**DESIGN FLAGS** (block omitted entirely if none active)
+- `Salo-inspired` — use short-burst, generous-rest structures in the main set
+- `Descending intensity` — build from lower to higher intensity across the main set
+- `Building intensity` — structure each repeat or sub-set as a build
+- `Drill-heavy` — increase drill proportion in warm-up and pre-set; S and A tiers only
+
+### 2.2 Time-block sections
+
+When a section is marked `active, time block only — N min`, output this placeholder:
+
+```
+[Section Name]
+      [Coach-managed block — N min]
+```
+
+Do not generate set content for time-block sections.
+
+### 2.3 Intensity mapping
+
+Use these words only in output — never use zone codes (A-I, R-III, etc.):
+
+| Descriptor | Zone | Commit scale |
+|---|---|---|
+| easy | A-I | 3 |
+| moderate | A-II | 5 |
+| strong | A-II upper / R-III | 7 |
+| fast | R-III / S-IV | 9 |
+| sprint | S-IV | 11 |
+| all out | S-V | 12 |
+
+The `Intensity range` field defines the session floor and ceiling. Arc across that range —
+do not sit at the ceiling throughout.
+
+---
+
+## 3. Output Contract — CRITICAL
+
+SetForge output has two parts, always in this order:
+
+### Part 1 — Commit Block
+
+- Starts with the bracket header line (see 5.6)
+- Ends with the last line of the Cool Down section
+- Contains ONLY Commit-ready text
+- Zero markdown, zero asterisks, zero ## headers, zero code fences, zero preamble
+- This is the text the coach copies directly into Commit
+
+### Part 2 — Session Summary
+
+Separated from Part 1 by this exact line:
+
+```
+---SESSION-SUMMARY---
+```
+
+Contains:
+- Volume table (section | metres | % of total)
+- Intensity distribution (one or two sentences, plain prose)
+- Technical emphasis (one sentence)
+- Active design flag notes (one line per flag)
+- Brief coaching flags if warranted
+
+The summary is for coach verification only — it never goes into Commit.
+
+### Nothing else
+
+No preamble. No "Here is your workout." No explanation before the bracket header.
+Output begins with `[` on the very first character.
+
+---
+
+## 4. Practice Structure
 
 | Section | Proportion | Notes |
 |---|---|---|
-| Warm Up | ~20% | Drill-forward, low intensity, A-I zone |
-| Pre-Main / Build | ~15% | Optional; transitions to main set focus |
+| Warm Up | ~20% | Drill-forward, easy–moderate |
+| Pre-Main / Build | ~15% | Only if present in prompt |
 | Main Set | ~55% | Primary training stimulus |
 | Cool Down | ~10% | Easy, active recovery |
 
-**Zone reference** (Swimming Canada):
-- A-I: aerobic base / easy
-- A-II: aerobic development / moderate
-- R-III: race pace / threshold
-- S-IV: speed / above threshold
-- S-V: sprint / maximal
+- Adjust proportions to fit the sections actually present in the prompt
+- If a section is time-block-only, redistribute its volume proportion across generated sections
+- **Main sets are never single-stroke** — always mix primary stroke with freestyle and/or choice
 
 ---
 
-## 3. Commit Formatting Rules
+## 5. Commit Formatting Rules
 
-These rules are non-negotiable. All output must conform to the Commit parsing engine.
+Non-negotiable. Part 1 output must conform exactly.
 
-### 3.1 Spacing and syntax
-- Spaces around "x": `4 x 100` ✓ — never `4x100`
-- Sendoffs: `@ 0:50`, `@ 1:25` — strictly for sendoffs only, never for rest. Always use a leading zero for sub-minute times (e.g. `@ 0:50` not `@ :50`) — Commit doesn't require it but it is the preferred format
-- Rest: written as part of the set description, e.g. `2:00 rest` on its own line
-- Intensity: write `sprint` or `all out` — never `allout`, `spr`, or `max`
+### 5.1 Spacing and syntax
+- Spaces around `x`: `4 x 100` — never `4x100`
+- Sendoffs: `@ 1:25`, `@ 0:50` — leading zero always for sub-minute times
+- `@` strictly for sendoffs only — never for rest
+- Rest written inline or on its own line: `30 sec rest` or `2:00 rest`
+- Intensity words only: `easy` `moderate` `strong` `fast` `sprint` `all out`
 
-### 3.2 Set formatting
-- Commit's parser understands natural language descriptions — write sets plainly
-- Numbered groupings within a repeat are supported: `12 x 50 1-4 kick @ 1:00, 5-8 paddle pull @ 0:55, 9-12 swim @ 0:50`
-- Odds/evens constructions are understood: `6 x 100 on 1:25 odds sprint evens easy`
-- Distance-based breakdowns: `300 choice (50 drill 25 swim)` — parser assigns distances correctly
-- Timed sets without a distance: `6:00 easy swimming, focus on technique` — parser implies distance from default 100 pace; use this format intentionally
-- Rest periods: `2:00 rest` on its own line — adds time to total without implying a swim distance
+### 5.2 Set formatting
+- Numbered groupings: `12 x 50 1-4 kick @ 1:00, 5-8 drill [Fist Drill] @ 1:00, 9-12 free @ 0:50`
+- Odds/evens: `6 x 100 @ 1:25 odds sprint evens easy`
+- Distance breakdowns: `300 choice (50 drill 25 swim)`
+- Timed sets: `6:00 easy swimming, focus on technique`
+- Rest lines: `2:00 rest` on its own line
 
-### 3.3 Bracket rules — CRITICAL
-Brackets `[ ]` block the parser from interpreting their contents. Use them in two distinct ways:
-
-**Coaching notes** — always on their own line:
+### 5.3 Bracket rules
+**Coaching notes** — own line, 6-space indent:
 ```
-  4 x 50 @ 0:50 fly
-  [strong underwater kick off the wall]
+      4 x 50 @ 0:50 fly
+      [strong underwater kick off the wall]
 ```
 
-**Protecting descriptions from misparse** — inline on the set line, when a word like `kick`, `drill`, `pull` appears in a description but should NOT change how the set is classified:
+**Parser protection** — inline when `kick`, `pull`, `drill`, or zone names appear
+in a description but must not change set classification:
 ```
-  4 x 50 @ 0:50 fly - [strong underwater kick off the wall]
-```
-Without brackets, the word `kick` would cause Commit to classify this as a kick set.
-With brackets, the parser ignores the bracketed content — the set is read as fly.
-
-**Drill naming** — when a drill appears in a set, `drill` must be outside brackets so the parser recognizes it as a drill set; the drill name goes inside brackets:
-```
-  4 x 200 @ 3:30 as 50 drill [I-Y-Scoop] / 150 free
+      4 x 50 @ 0:50 fly — [focus on underwater kick]
 ```
 
-### 3.4 Circuits
-Commit supports circuits (rounds-based sets) using indentation. The circuit header is the repeat count; everything tabbed beneath it is included in the circuit.
+**Drill naming** — `drill` outside brackets, name inside:
+```
+      4 x 200 @ 3:30 as 50 drill [I-Y-Scoop] / 150 free
+```
 
-**Basic circuit:**
+### 5.4 Circuits
 ```
 3x
-  100 kick
-  200 pull
+      100 kick
+      200 pull
 ```
-The repeat count line (`3x`) can be written as `3x`, `3 x`, or `3 times through` — Commit reads the leading number and treats the indented lines as the circuit contents.
+**Nested circuits do not work** — write as explicit separate sets instead.
+Sendoffs go on individual lines inside the circuit, not on the header line.
 
-**Nested circuits** — circuits inside circuits are supported and calculated correctly:
-```
-2x
-  100 kick
-  4x
-    3 x 50s
-    100 easy
-```
-Commit calculates total volume through all nesting levels correctly.
-
-**Circuit sendoffs** — sendoffs are applied to individual lines inside the circuit, not to the circuit header line. How Commit aggregates these is still being worked out, so keep sendoffs on the individual set lines within a circuit for now.
-
-**Use circuits when**: a set has multiple components done as rounds, or when a main set has a complex inner repeat structure. Circuits keep the workout clean and ensure Commit's volume calculation is accurate.
-
-### 3.5 Section headings and indentation
-- Any text can be a section heading — Commit does not require specific heading names
-- **Warning**: if a section heading contains `kick`, `pull`, or an energy system name (e.g. `Aerobic`, `Threshold`), Commit will apply that classification to every set in that section. Use neutral headings or bracket the problematic word to avoid this
-- **Sets must be indented exactly 6 spaces beneath their section heading** — fewer spaces will not parse correctly
-- Coaching notes also indented 6 spaces, on their own line
+### 5.5 Section headings and indentation
+- Section headings flush left — no markdown, no indentation
+- Sets indented exactly 6 spaces
+- Coaching notes indented 6 spaces, on their own line
 - No extra blank lines between sets within a section
 - One blank line between sections
+- Headings must not contain `kick`, `pull`, or energy system names unbracketed
 
-### 3.6 Workout header
-The header line must be wrapped in square brackets so the parser ignores it entirely:
+### 5.6 Workout header
+First line of output:
 ```
-[SPP Week 14 — Freestyle catch mechanics / A-II aerobic development]
+[Phase Week N — Primary technical focus / zone name]
 ```
-Include: phase, week number, primary technical focus, primary zone.
-
-### 3.7 Example — correct formatting
-
-```
-[SPP Week 14 — Breaststroke pull / A-I aerobic base]
-
-Warm Up
-      400 as 100 free / 100 kick / 100 back / 100 choice
-      [easy effort, long stroke]
-      12 x 50 1-4 kick @ 1:00, 5-8 drill [Catchup Drill] @ 1:00, 9-12 free @ 0:50
-
-Main Set
-      4 x 200 @ 3:30 as 25 drill [Two Kick One Pull] / 75 breast
-      [elbows high, hands inside elbows on the scoop]
-      6 x 100 @ 1:25 odds sprint evens easy
-
-Cool Down
-      300 choice (50 drill 25 swim)
-      2:00 rest
-```
+Example: `[SPP Week 3 — Freestyle catch mechanics / aerobic development]`
+Use zone names (`aerobic base`, `aerobic development`, `race pace`, `speed endurance`),
+not zone codes.
 
 ---
 
-## 4. Design Principles
+## 6. Design Principles
 
-### 4.1 General
-- Never prescribe drills outside the approved drill library (see `references/drills.md`)
-- When introducing a drill, choose one that fits the session's technical objective
-- Sendoffs on drill-heavy sets should be conservative — give athletes time to execute
-- Sprint Salo-style sets (short bursts, generous rest) are a deliberate design choice, not a default — use when the session calls for speed development
+### 6.1 Drill selection
+- Only approved drills from `references/drills.md`
+- Priority: S-tier → A-tier → B-tier situationally; C-tier excluded
+- Conservative sendoffs on drill sets (add 15–20 sec beyond expected swim time)
+- `Drill-heavy` flag: increase drill proportion; S/A tiers only
 
-### 4.2 Freestyle focus areas
-- EVF (Early Vertical Forearm) / catch mechanics
-- Stroke count / DPS (distance per stroke)
-- High-elbow recovery
+### 6.2 Sprint Salo
+Active when `Salo-inspired` flag is present:
+- Short repetitions (15–50m), generous rest (1:2 minimum, typically 1:3+)
+- Quality over volume — not a default
+- See `references/set-templates.md` for Sprint Salo patterns
 
-### 4.3 Breaststroke focus areas
-- I-Y-Scoop pull pattern (three phases: catch → high-elbow → inward scoop)
-- Typically performed with pull buoy + snorkel
-- Full stroke timing: pull, breathe, kick, glide sequencing
-
-### 4.4 Volume and intensity balance
-- Drill-heavy sessions skew toward A-I/A-II
-- Speed sessions (R-III/S-IV/S-V) require adequate warm-up and recovery ratios
-- Work-to-rest ratio for sprint sets: minimum 1:2, often 1:3 or greater
-
----
-
-## 5. Seasonal Phase Awareness
-
-When a seasonal plan is active, confirm the current week/phase before building a session.
-Match the session's technical objective and intensity zone emphasis to the plan.
-
-| Phase | Primary Focus |
+### 6.3 Design flags
+| Flag | Effect |
 |---|---|
-| GPP (General Prep) | Aerobic base, stroke volume, drill introduction |
-| SPP (Specific Prep) | Race-pace exposure, stroke efficiency under load |
-| Comp (Competition Prep) | Race specificity, sharpening, low volume / high intensity |
+| `Salo-inspired` | Main set: short-burst / generous-rest structures |
+| `Descending intensity` | Main set arcs from lower to higher intensity |
+| `Building intensity` | Each repeat / sub-set is a build |
+| `Drill-heavy` | Higher drill proportion; S/A tier only |
+
+Multiple flags apply simultaneously.
+
+### 6.4 Volume and work:rest
+- Volume from the app only — never assumed
+- Sprint sets: minimum 1:2 work:rest, typically 1:3+
+- S-IV + S-V combined should not exceed ~6% of session volume
+- S-V deprioritized unless explicitly requested
+- For full zone design guidance: read `references/energy-zones.md`
+
+### 6.5 Phase awareness
+| Phase | Emphasis |
+|---|---|
+| GPP | Aerobic base, stroke volume, drill introduction |
+| SPP | Race-pace exposure, stroke efficiency under load |
+| Competition | Race specificity, sharpening, low volume / high intensity |
 | Taper | Volume reduction, speed maintenance, feel for water |
 
 ---
 
-## 6. Output Checklist
+## 7. Output Checklist
 
-Before finalizing any workout, confirm:
-- [ ] All formatting matches Commit conventions (Section 3)
-- [ ] All drills are from the approved library (`references/drills.md`)
-- [ ] Total volume was provided or confirmed before building — never assumed
-- [ ] Coaching notes are on their own lines in square brackets
-- [ ] Section headings are flush left
-- [ ] Intensity zones are appropriate for the session's phase and objective
-- [ ] Sendoffs on drill sets are conservative
+- [ ] Output starts with bracket header — no preamble, first character is `[`
+- [ ] Part 1 is pure Commit text — zero markdown, zero code fences, zero asterisks
+- [ ] `---SESSION-SUMMARY---` separator present between Part 1 and Part 2
+- [ ] All drills from `references/drills.md`
+- [ ] All formatting matches Section 5 exactly
+- [ ] Total volume matches app input — every repeat counted
+- [ ] Main set mixes primary stroke with freestyle and/or choice
+- [ ] Intensity stays within specified range
+- [ ] All active design flags applied
+- [ ] Time-block sections rendered as placeholders only
+- [ ] No zone codes anywhere in output
 
 ---
 
 ## Reference Files
 
-- `references/drills.md` — Approved drill library by stroke and focus
-- `references/set-templates.md` — Reusable set structures and Sprint Salo formats
+| File | When to read |
+|---|---|
+| `references/drills.md` | Always — before selecting any drill |
+| `references/set-templates.md` | Always — before designing any set |
+| `references/energy-zones.md` | When zone-specific set design guidance is needed |
