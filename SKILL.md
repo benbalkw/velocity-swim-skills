@@ -133,9 +133,11 @@ Contains:
       Section total: 850m — budget: 700m — OVER by 150m — adjust before outputting
 ```
 
-  If any section is over budget, the workout must be revised before
-  the summary is written. The summary reflects the final adjusted workout,
-  not the draft.
+If any section total exceeds its budget, stop. Do not write "adjusted to Xm."
+Go back and rewrite that section's sets so the actual metre count matches
+the budget. Then recount. Only write the summary after every section
+total matches its budget exactly. The summary must reflect what is
+actually in the workout — not a target or an intention.
 
 - Intensity distribution (one or two sentences, plain prose)
 - Technical emphasis (one sentence)
