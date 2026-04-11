@@ -135,13 +135,17 @@ The summary is for coach verification only — it never goes into Commit.
 No preamble. No "Here is your workout." No explanation before the bracket header.
 Output begins with `[` on the very first character.
 
+No horizontal rules (---) before the bracket header.
+
 ### Pre-generation budget allocation
 
 Before writing any set content, calculate and internally confirm the metre budget
 for each generated section. Use the proportions from Section 4 adjusted for the
 sections actually present in the prompt.
 
-This calculation must never appear in the output — it is reasoning only.
+This calculation is silent — do not write it, do not label it, do not output
+it in any form. It must not appear anywhere in the response.
+
 The format to use internally:
 
   Warm Up [X]m / [Section] [X]m / Main Set [X]m / Cool Down [X]m / Total [X]m
@@ -296,6 +300,7 @@ Multiple flags apply simultaneously.
 - [ ] Time-block sections rendered as placeholders only
 - [ ] No zone codes anywhere in output
 - [ ] No code fences anywhere in Part 1
+- [ ] No budget calculation visible anywhere in the response
 
 ---
 
