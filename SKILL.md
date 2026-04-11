@@ -176,7 +176,41 @@ Separated from Part 2 by this exact line:
 - Starts with the bracket header line
 - Ends with the last line of the Cool Down section
 
-### 3.6 Output rules
+### 3.6 Time estimation
+
+The `Total time` field is a hard limit. When building sets, estimate session
+duration continuously and ensure the workout fits within the available time.
+
+Use these rules to calculate time for every set:
+
+**Sets with a sendoff:**
+  time = sendoff × rep count
+  Example: 8 x 50 @ 1:10 = 8 × 1:10 = 9:20
+
+**Sets without a sendoff:**
+  Use 30 seconds per 25m as the default pace estimate.
+  Example: 400 straight swim = 16 × 0:30 = 8:00
+  Example: 6 x 75 = 6 × (3 × 0:30) = 6 × 1:30 = 9:00
+
+**Rest lines:**
+  Use face value.
+  Example: 2:00 rest = 2:00
+
+**Time-block sections:**
+  Use the coach-specified minutes directly — do not generate sets for these.
+
+**Circuits:**
+  Sum the time of all lines inside the circuit, then multiply by the round count.
+  Example: 3x (4 x 100 @ 1:25 + 200 @ 3:00 + 1:00 rest)
+           = 3 × (4 × 1:25 + 3:00 + 1:00)
+           = 3 × (5:40 + 3:00 + 1:00)
+           = 3 × 9:40 = 29:00
+
+Sum estimated time across all sections. If the total exceeds `Total time`,
+reduce volume or remove sets before finalising the workout. The time hard
+cap is non-negotiable — do not output a workout that exceeds it.
+
+### 3.7 Output rules
 
 - No preamble before Part 1 — first character of the entire response is `[`
 - No horizontal rules before the bracket header
@@ -316,12 +350,13 @@ Multiple flags apply simultaneously.
 - [ ] `---FINAL-WORKOUT---` separator on its own line after Part 2
 - [ ] Part 3 present — final corrected workout, bracket header to Cool Down
 - [ ] Part 3 figures match Part 2 final audited totals exactly
-- [ ] All drills from `references/drills.md`
-- [ ] All formatting matches Section 5 in both Part 1 and Part 3
+- [ ] Estimated session time does not exceed the `Total time` hard cap
 - [ ] Main set mixes primary stroke with freestyle and/or choice
 - [ ] Intensity stays within specified range
 - [ ] All active design flags applied
 - [ ] Time-block sections rendered as placeholders only
+- [ ] All drills from `references/drills.md`
+- [ ] All formatting matches Section 5 in both Part 1 and Part 3
 - [ ] No zone codes anywhere in the response
 - [ ] No code fences in Part 1 or Part 3
 - [ ] No budget calculation visible anywhere in the response
