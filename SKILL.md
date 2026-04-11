@@ -122,7 +122,21 @@ Separated from Part 1 by this exact line:
 ```
 
 Contains:
-- Volume table (section | metres | % of total)
+- Volume count — for each generated section, list every set with its
+  metre value, then the section total, then confirm it matches the
+  budget allocation. Example format:
+
+```
+    Warm Up
+      400 straight swim = 400m
+      6 x 75 = 450m
+      Section total: 850m — budget: 700m — OVER by 150m — adjust before outputting
+```
+
+  If any section is over budget, the workout must be revised before
+  the summary is written. The summary reflects the final adjusted workout,
+  not the draft.
+
 - Intensity distribution (one or two sentences, plain prose)
 - Technical emphasis (one sentence)
 - Active design flag notes (one line per flag)
