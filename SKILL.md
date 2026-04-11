@@ -104,6 +104,21 @@ do not sit at the ceiling throughout.
 
 SetForge output has two parts, always in this order:
 
+### Generation order — CRITICAL
+
+Follow this sequence exactly:
+
+1. Calculate the budget allocation silently (Section 3, Pre-generation budget)
+2. Draft all sections internally — do not output anything yet
+3. Count every metre in every section against the budget
+4. Correct any sections that are over or under budget
+5. Confirm the total matches the specified volume exactly
+6. Only then write Part 1 — the corrected workout
+7. Then write Part 2 — the summary reflecting the final workout
+
+Do not write Part 1 until steps 1–5 are complete.
+The summary must reflect what is in Part 1 — they must match exactly.
+
 ### Part 1 — Commit Block
 
 - Starts with the bracket header line (see 5.6)
