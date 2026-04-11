@@ -141,10 +141,10 @@ Before writing any set content, calculate and internally confirm the metre budge
 for each generated section. Use the proportions from Section 4 adjusted for the
 sections actually present in the prompt.
 
-State the allocation in this format as the first act of generation — this line
-is for internal use only and must NOT appear in the output:
+This calculation must never appear in the output — it is reasoning only.
+The format to use internally:
 
-  BUDGET: Warm Up [X]m / [Section] [X]m / Main Set [X]m / Cool Down [X]m / Total [X]m
+  Warm Up [X]m / [Section] [X]m / Main Set [X]m / Cool Down [X]m / Total [X]m
 
 The total must equal the volume specified in the prompt exactly. Each section
 must be designed to hit its allocation — not approximately, exactly.
