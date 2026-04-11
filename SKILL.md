@@ -33,7 +33,7 @@ Read this file fully. Then read the reference files as directed below.
 **Pool**: 25-metre
 **Session length**: defined by the app prompt (`Total time` field)
 **Schedule**: Monday, Tuesday, Wednesday, Friday, Saturday
-**Platform**: Commit Swimming — all output must parse correctly (see Section 3)
+**Platform**: Commit Swimming — all output must parse correctly (see Section 5)
 **Equipment**: fins, snorkel, paddles, kickboard, pull buoy
 
 ---
@@ -75,10 +75,8 @@ The prompt is the complete input — treat it as authoritative.
 
 When a section is marked `active, time block only — N min`, output this placeholder:
 
-```
 [Section Name]
       [Coach-managed block — N min]
-```
 
 Do not generate set content for time-block sections.
 
@@ -86,14 +84,14 @@ Do not generate set content for time-block sections.
 
 Use these words only in output — never use zone codes (A-I, R-III, etc.):
 
-| Descriptor | Zone | Commit scale |
-|---|---|---|
-| easy | A-I | 3 |
-| moderate | A-II | 5 |
-| strong | A-II upper / R-III | 7 |
-| fast | R-III / S-IV | 9 |
-| sprint | S-IV | 11 |
-| all out | S-V | 12 |
+| Descriptor | Zone           | Commit scale |
+|------------|----------------|--------------|
+| easy       | A-I            | 3            |
+| moderate   | A-II           | 5            |
+| strong     | A-II upper / R-III | 7        |
+| fast       | R-III / S-IV   | 9            |
+| sprint     | S-IV           | 11           |
+| all out    | S-V            | 12           |
 
 The `Intensity range` field defines the session floor and ceiling. Arc across that range —
 do not sit at the ceiling throughout.
@@ -102,77 +100,59 @@ do not sit at the ceiling throughout.
 
 ## 3. Output Contract — CRITICAL
 
-SetForge output has two parts, always in this order:
+Output has three parts, always in this order. Do not deviate from this structure.
 
-### Generation order — CRITICAL
+### 3.1 Generation sequence — follow exactly
 
-Follow this sequence exactly:
+1. Calculate the section budget silently — see Section 3.4
+2. Write Part 1 — the first draft workout
+3. Write Part 2 — the session summary, including full volume audit
+4. If the audit finds any section over budget, apply corrections and rewrite
+   those sections explicitly in the summary
+5. Write Part 3 — the final corrected workout, reflecting all corrections from step 4
 
-1. Calculate the budget allocation silently (Section 3, Pre-generation budget)
-2. Draft all sections internally — do not output anything yet
-3. Count every metre in every section against the budget
-4. Correct any sections that are over or under budget
-5. Confirm the total matches the specified volume exactly
-6. Only then write Part 1 — the corrected workout
-7. Then write Part 2 — the summary reflecting the final workout
+Part 3 is what the app displays and the coach copies. It must match the
+final audited figures in Part 2 exactly.
 
-Do not write Part 1 until steps 1–5 are complete.
-The summary must reflect what is in Part 1 — they must match exactly.
-
-### Part 1 — Commit Block
+### 3.2 Part 1 — Draft Workout
 
 - Starts with the bracket header line (see 5.6)
 - Ends with the last line of the Cool Down section
-- Contains ONLY Commit-ready text
-- No code fences (no ``` anywhere in the output)
-- Zero markdown, zero asterisks, zero ## headers, zero code fences, zero preamble
-- This is the text the coach copies directly into Commit
+- Contains only Commit-ready text — no markdown, no code fences, no preamble
+- This is a working draft — the app discards it and displays Part 3 instead
 
-### Part 2 — Session Summary
+### 3.3 Part 2 — Session Summary
 
 Separated from Part 1 by this exact line:
 
-```
 ---SESSION-SUMMARY---
-```
 
-Contains:
-- Volume count — for each generated section, list every set with its
-  metre value, then the section total, then confirm it matches the
-  budget allocation. Example format:
+Contains in this order:
 
-```
+**Volume audit** — for each generated section, list every set with its metre
+value, the section total, and whether it matches the budget:
+
     Warm Up
       400 straight swim = 400m
       6 x 75 = 450m
-      Section total: 850m — budget: 700m — OVER by 150m — adjust before outputting
-```
+      Section total: 850m — budget: 700m — OVER by 150m
+      CORRECTION: reduce to 4 x 75 = 300m → section total 700m — MATCH
 
-If any section total exceeds its budget, stop. Do not write "adjusted to Xm."
-Go back and rewrite that section's sets so the actual metre count matches
-the budget. Then recount. Only write the summary after every section
-total matches its budget exactly. The summary must reflect what is
-actually in the workout — not a target or an intention.
+If any section is over budget, document the correction clearly.
+The corrected figures must be carried into Part 3.
 
-- Intensity distribution (one or two sentences, plain prose)
-- Technical emphasis (one sentence)
-- Active design flag notes (one line per flag)
-- Brief coaching flags if warranted
+**Intensity distribution** — one or two sentences, plain prose
 
-The summary is for coach verification only — it never goes into Commit.
+**Technical emphasis** — one sentence
 
-### Nothing else
+**Active design flag notes** — one line per active flag; omit if none
 
-No preamble. No "Here is your workout." No explanation before the bracket header.
-Output begins with `[` on the very first character.
+**Coaching flags** — brief, if warranted
 
-No horizontal rules (---) before the bracket header.
+### 3.4 Pre-generation budget allocation
 
-### Pre-generation budget allocation
-
-Before writing any set content, calculate and internally confirm the metre budget
-for each generated section. Use the proportions from Section 4 adjusted for the
-sections actually present in the prompt.
+Before writing Part 1, calculate the metre budget for each section silently.
+Use the proportions from Section 4 adjusted for the sections present in the prompt.
 
 This calculation is silent — do not write it, do not label it, do not output
 it in any form. It must not appear anywhere in the response.
@@ -181,31 +161,49 @@ The format to use internally:
 
   Warm Up [X]m / [Section] [X]m / Main Set [X]m / Cool Down [X]m / Total [X]m
 
-The total must equal the volume specified in the prompt exactly. Each section
-must be designed to hit its allocation — not approximately, exactly.
+The total must equal the volume specified in the prompt exactly.
 
-Do not begin writing set content until the budget is confirmed.
+### 3.5 Part 3 — Final Corrected Workout
+
+Separated from Part 2 by this exact line:
+
+---FINAL-WORKOUT---
+
+- Identical in format to Part 1 — pure Commit-ready text
+- Reflects all corrections documented in the Part 2 audit
+- This is the authoritative output — it must match the Part 2 final figures exactly
+- No code fences, no markdown, no preamble
+- Starts with the bracket header line
+- Ends with the last line of the Cool Down section
+
+### 3.6 Output rules
+
+- No preamble before Part 1 — first character of the entire response is `[`
+- No horizontal rules before the bracket header
+- No budget calculation visible anywhere in the response
+- No zone codes anywhere in any part
+- No code fences in Part 1 or Part 3
 
 ---
 
 ## 4. Practice Structure
 
-| Section | Proportion | Notes |
-|---|---|---|
-| Warm Up | ~20% | Drill-forward, easy–moderate |
-| Pre-Main / Build | ~15% | Only if present in prompt |
-| Main Set | ~55% | Primary training stimulus |
-| Cool Down | ~10% | Easy, active recovery |
+| Section          | Proportion | Notes                          |
+|------------------|------------|--------------------------------|
+| Warm Up          | ~20%       | Drill-forward, easy–moderate   |
+| Pre-Main / Build | ~15%       | Only if present in prompt      |
+| Main Set         | ~55%       | Primary training stimulus      |
+| Cool Down        | ~10%       | Easy, active recovery          |
 
 - Adjust proportions to fit the sections actually present in the prompt
-- If a section is time-block-only, redistribute its volume proportion across generated sections
+- If a section is time-block-only, redistribute its proportion across generated sections
 - **Main sets are never single-stroke** — always mix primary stroke with freestyle and/or choice
 
 ---
 
 ## 5. Commit Formatting Rules
 
-Non-negotiable. Part 1 output must conform exactly.
+Non-negotiable. Applies to Part 1 and Part 3.
 
 ### 5.1 Spacing and syntax
 - Spaces around `x`: `4 x 100` — never `4x100`
@@ -222,29 +220,27 @@ Non-negotiable. Part 1 output must conform exactly.
 - Rest lines: `2:00 rest` on its own line
 
 ### 5.3 Bracket rules
+
 **Coaching notes** — own line, 6-space indent:
-```
+
       4 x 50 @ 0:50 fly
       [strong underwater kick off the wall]
-```
 
 **Parser protection** — inline when `kick`, `pull`, `drill`, or zone names appear
 in a description but must not change set classification:
-```
+
       4 x 50 @ 0:50 fly — [focus on underwater kick]
-```
 
 **Drill naming** — `drill` outside brackets, name inside:
-```
+
       4 x 200 @ 3:30 as 50 drill [I-Y-Scoop] / 150 free
-```
 
 ### 5.4 Circuits
-```
-3x
-      100 kick
-      200 pull
-```
+
+      3x
+            100 kick
+            200 pull
+
 **Nested circuits do not work** — write as explicit separate sets instead.
 Sendoffs go on individual lines inside the circuit, not on the header line.
 
@@ -257,10 +253,11 @@ Sendoffs go on individual lines inside the circuit, not on the header line.
 - Headings must not contain `kick`, `pull`, or energy system names unbracketed
 
 ### 5.6 Workout header
-First line of output:
-```
-[Phase Week N — Primary technical focus / zone name]
-```
+
+First line of Part 1 and Part 3:
+
+      [Phase Week N — Primary technical focus / zone name]
+
 Example: `[SPP Week 3 — Freestyle catch mechanics / aerobic development]`
 Use zone names (`aerobic base`, `aerobic development`, `race pace`, `speed endurance`),
 not zone codes.
@@ -282,12 +279,13 @@ Active when `Salo-inspired` flag is present:
 - See `references/set-templates.md` for Sprint Salo patterns
 
 ### 6.3 Design flags
-| Flag | Effect |
-|---|---|
-| `Salo-inspired` | Main set: short-burst / generous-rest structures |
-| `Descending intensity` | Main set arcs from lower to higher intensity |
-| `Building intensity` | Each repeat / sub-set is a build |
-| `Drill-heavy` | Higher drill proportion; S/A tier only |
+
+| Flag                  | Effect                                              |
+|-----------------------|-----------------------------------------------------|
+| `Salo-inspired`       | Main set: short-burst / generous-rest structures    |
+| `Descending intensity`| Main set arcs from lower to higher intensity        |
+| `Building intensity`  | Each repeat / sub-set is a build                    |
+| `Drill-heavy`         | Higher drill proportion; S/A tier only              |
 
 Multiple flags apply simultaneously.
 
@@ -299,46 +297,41 @@ Multiple flags apply simultaneously.
 - For full zone design guidance: read `references/energy-zones.md`
 
 ### 6.5 Phase awareness
-| Phase | Emphasis |
-|---|---|
-| GPP | Aerobic base, stroke volume, drill introduction |
-| SPP | Race-pace exposure, stroke efficiency under load |
+
+| Phase       | Emphasis                                               |
+|-------------|--------------------------------------------------------|
+| GPP         | Aerobic base, stroke volume, drill introduction        |
+| SPP         | Race-pace exposure, stroke efficiency under load       |
 | Competition | Race specificity, sharpening, low volume / high intensity |
-| Taper | Volume reduction, speed maintenance, feel for water |
+| Taper       | Volume reduction, speed maintenance, feel for water    |
 
 ---
 
 ## 7. Output Checklist
 
-- [ ] Output starts with bracket header — no preamble, first character is `[`
-- [ ] Part 1 is pure Commit text — zero markdown, zero code fences, zero asterisks
-- [ ] `---SESSION-SUMMARY---` separator present between Part 1 and Part 2
+- [ ] First character of response is `[` — no preamble of any kind
+- [ ] Part 1 present — Commit-ready draft, bracket header to Cool Down
+- [ ] `---SESSION-SUMMARY---` separator on its own line after Part 1
+- [ ] Part 2 present — volume audit, corrections documented, intensity and technical summary
+- [ ] `---FINAL-WORKOUT---` separator on its own line after Part 2
+- [ ] Part 3 present — final corrected workout, bracket header to Cool Down
+- [ ] Part 3 figures match Part 2 final audited totals exactly
 - [ ] All drills from `references/drills.md`
-- [ ] All formatting matches Section 5 exactly
-- [ ] Volume audit complete — for every section, count:
-      - Each straight swim (e.g. 400 = 400m)
-      - Each repeat set (e.g. 8 x 50 = 400m)
-      - Each circuit (multiply inner distances by repeat count)
-      - Each compound repeat (e.g. 4 x 200 as 50 drill / 150 swim = 800m)
-      - Rest lines (0m — rest lines never contribute distance)
-      - Time-block sections (0m — not generated, not counted)
-      Sum all sections. If total exceeds the budget by any amount, adjust
-      before outputting — shorten a set, reduce rep count, or reduce a
-      distance. Do not output a workout that exceeds the specified volume.
+- [ ] All formatting matches Section 5 in both Part 1 and Part 3
 - [ ] Main set mixes primary stroke with freestyle and/or choice
 - [ ] Intensity stays within specified range
 - [ ] All active design flags applied
 - [ ] Time-block sections rendered as placeholders only
-- [ ] No zone codes anywhere in output
-- [ ] No code fences anywhere in Part 1
+- [ ] No zone codes anywhere in the response
+- [ ] No code fences in Part 1 or Part 3
 - [ ] No budget calculation visible anywhere in the response
 
 ---
 
 ## Reference Files
 
-| File | When to read |
-|---|---|
-| `references/drills.md` | Always — before selecting any drill |
-| `references/set-templates.md` | Always — before designing any set |
-| `references/energy-zones.md` | When zone-specific set design guidance is needed |
+| File                          | When to read                                      |
+|-------------------------------|---------------------------------------------------|
+| `references/drills.md`        | Always — before selecting any drill               |
+| `references/set-templates.md` | Always — before designing any set                 |
+| `references/energy-zones.md`  | When zone-specific set design guidance is needed  |
