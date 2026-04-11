@@ -109,6 +109,7 @@ SetForge output has two parts, always in this order:
 - Starts with the bracket header line (see 5.6)
 - Ends with the last line of the Cool Down section
 - Contains ONLY Commit-ready text
+- No code fences (no ``` anywhere in the output)
 - Zero markdown, zero asterisks, zero ## headers, zero code fences, zero preamble
 - This is the text the coach copies directly into Commit
 
@@ -133,6 +134,22 @@ The summary is for coach verification only — it never goes into Commit.
 
 No preamble. No "Here is your workout." No explanation before the bracket header.
 Output begins with `[` on the very first character.
+
+### Pre-generation budget allocation
+
+Before writing any set content, calculate and internally confirm the metre budget
+for each generated section. Use the proportions from Section 4 adjusted for the
+sections actually present in the prompt.
+
+State the allocation in this format as the first act of generation — this line
+is for internal use only and must NOT appear in the output:
+
+  BUDGET: Warm Up [X]m / [Section] [X]m / Main Set [X]m / Cool Down [X]m / Total [X]m
+
+The total must equal the volume specified in the prompt exactly. Each section
+must be designed to hit its allocation — not approximately, exactly.
+
+Do not begin writing set content until the budget is confirmed.
 
 ---
 
@@ -263,12 +280,22 @@ Multiple flags apply simultaneously.
 - [ ] `---SESSION-SUMMARY---` separator present between Part 1 and Part 2
 - [ ] All drills from `references/drills.md`
 - [ ] All formatting matches Section 5 exactly
-- [ ] Total volume matches app input — every repeat counted
+- [ ] Volume audit complete — for every section, count:
+      - Each straight swim (e.g. 400 = 400m)
+      - Each repeat set (e.g. 8 x 50 = 400m)
+      - Each circuit (multiply inner distances by repeat count)
+      - Each compound repeat (e.g. 4 x 200 as 50 drill / 150 swim = 800m)
+      - Rest lines (0m — rest lines never contribute distance)
+      - Time-block sections (0m — not generated, not counted)
+      Sum all sections. If total exceeds the budget by any amount, adjust
+      before outputting — shorten a set, reduce rep count, or reduce a
+      distance. Do not output a workout that exceeds the specified volume.
 - [ ] Main set mixes primary stroke with freestyle and/or choice
 - [ ] Intensity stays within specified range
 - [ ] All active design flags applied
 - [ ] Time-block sections rendered as placeholders only
 - [ ] No zone codes anywhere in output
+- [ ] No code fences anywhere in Part 1
 
 ---
 
