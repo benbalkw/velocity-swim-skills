@@ -208,11 +208,22 @@ Rest must be 2–5 minutes for full phosphagen recovery.
 
 ## Sprint Salo Patterns
 
-Active when `Salo-inspired` flag is present. Short quality bursts embedded in moderate
-volume — builds speed-endurance within an aerobic context.
+Active when `Salo-inspired` flag is present.
 
-**Core principle**: short, high-intensity repetitions with generous rest.
-Work:rest minimum 1:2, typically 1:3 or greater.
+**Philosophy**: Content over yardage. Every rep has a purpose — activation,
+acceleration, max velocity, or race-pace rehearsal. Total volume will be lower
+than a standard session. This is intentional. Do not pad sets to hit a volume
+target if it compromises effort quality.
+
+**Core principle**: Short, high-intensity repetitions with generous rest.
+Work:rest minimum 1:2, typically 1:3 or greater. Speed is the stimulus —
+every main set rep swum as fast as technique allows.
+
+**What to avoid**:
+- Threshold or sustained T-pace sets in the main set
+- Rest intervals shorter than 1:2 work:rest
+- Reps exceeding 100m in the main set unless broken
+- Volume accumulation as the primary design goal
 
 ### Classic Salo burst set
 ```
@@ -235,11 +246,14 @@ Work:rest minimum 1:2, typically 1:3 or greater.
 ### Salo embedded in aerobic circuit
 ```
 [3]x
-      [6 x 25] @ [0:35] free — strong effort, focus on EVF catch
-      [4 x 50] @ [1:00] descend 1–4
+      [6 x 25] @ [2:00] sprint — race mechanics, max velocity
       200 easy choice
-      [active recovery — use the 200 to flush, not to grind]
+      [active recovery only — flush the lactate, stay loose, no effort]
 ```
+
+**Warm-up and pre-set with Salo flag**: Apply normal warm-up structure.
+Pre-set should include short activation swims to prime the nervous system —
+e.g. 6 x 25 build to fast — before the main set.
 
 ---
 
