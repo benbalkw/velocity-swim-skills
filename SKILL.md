@@ -58,7 +58,15 @@ that depends on it — never invent a value for it.
 ### 2.1 Prompt fields
 
 **SESSION PARAMETERS**
-- `Total volume` — metres; use exactly as given, distribute per Section 4
+- `Total volume` — metres for the generated sections only; distribute per Section 4.
+  It may already be reduced by the app to fit around time-block sections — use it as given,
+  never scale it up or down yourself. Time-block sections contribute 0m.
+  Hit it within ±100m in the final workout.
+  **Exception — `Salo-inspired` active:** volume is a ceiling, not a target. Coming in under is
+  fine (see `references/set-templates.md`, Sprint Salo Patterns); state the shortfall in
+  Coaching flags (§3.3), e.g. `Salo session: 2,900m of 3,500m — quality over volume`.
+  If the volume cannot fit inside `Total time`, the time cap wins (§3.6); state the shortfall
+  in Coaching flags.
 - `Total time` — minutes; hard limit (already adjusted for time-block sections)
 - `Training phase` — one of: `GPP` · `SPP` · `Competition` · `Taper`
 - `Day` — one of: `Monday` · `Tuesday` · `Wednesday` · `Friday` · `Saturday`
@@ -113,6 +121,7 @@ When a section is marked `active, time block only — N min`, output this placeh
       [Coach-managed block — N min]
 
 Do not generate set content for time-block sections.
+Time-block sections contribute no metres to the volume audit.
 
 ### 2.3 Intensity mapping
 
@@ -195,7 +204,8 @@ The format to use internally:
 
   Warm Up [X]m / [Section] [X]m / Main Set [X]m / Cool Down [X]m / Total [X]m
 
-The total must equal the volume specified in the prompt exactly.
+The total must equal the `Total volume` specified in the prompt (with `Salo-inspired`,
+it may be lower — see 2.1).
 
 ### 3.5 Part 3 — Final Corrected Workout
 
@@ -384,6 +394,7 @@ Multiple flags apply simultaneously.
 - [ ] `---FINAL-WORKOUT---` separator on its own line after Part 2
 - [ ] Part 3 present — final corrected workout, bracket header to Cool Down
 - [ ] Part 3 figures match Part 2 final audited totals exactly
+- [ ] Final volume within ±100m of `Total volume` (with `Salo-inspired`: at or under, shortfall stated)
 - [ ] Estimated session time does not exceed the `Total time` hard cap
 - [ ] Main set mixes primary stroke with freestyle and/or choice
 - [ ] Intensity stays within specified range
