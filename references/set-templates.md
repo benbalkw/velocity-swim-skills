@@ -213,7 +213,9 @@ Active when `Salo-inspired` flag is present.
 **Philosophy**: Content over yardage. Every rep has a purpose — activation,
 acceleration, max velocity, or race-pace rehearsal. Total volume will be lower
 than a standard session. This is intentional. Do not pad sets to hit a volume
-target if it compromises effort quality.
+target if it compromises effort quality. With `Salo-inspired` the prompt's
+`Total volume` is a ceiling, not a target: coming in under is fine, going over
+is not. State the shortfall in Coaching flags (SKILL.md §2.1).
 
 **Core principle**: Short, high-intensity repetitions with generous rest.
 Work:rest minimum 1:2, typically 1:3 or greater. Speed is the stimulus —
