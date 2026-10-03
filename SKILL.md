@@ -52,6 +52,7 @@ the blocks below, always in this fixed order, separated by blank lines:
 3. `SECTION STRUCTURE` — always present
 4. `DESIGN FLAGS` — optional
 5. `DRILL NOTES` — optional
+6. `RECENT SESSIONS` — optional; always last, because it is context, not instruction
 
 Fields and blocks marked optional may be absent. When one is absent, skip every rule
 that depends on it — never invent a value for it.
@@ -126,6 +127,10 @@ Example:
   Coaching flags.
 - When the block is absent, select drills normally per 6.1.
 
+**RECENT SESSIONS** (block omitted entirely if there is no recent history)
+- Practices swum in the past 7 days, most recent first — context only; see 2.4
+- When the block is absent, design the session from today's parameters alone.
+
 Example:
 
     DRILL NOTES
@@ -157,6 +162,49 @@ Use these words only in output — never use zone codes (A-I, R-III, etc.):
 
 The `Intensity range` field defines the session floor and ceiling. Arc across that range —
 do not sit at the ceiling throughout.
+
+### 2.4 Recent sessions
+
+Applies only when the RECENT SESSIONS block is present. Example:
+
+    RECENT SESSIONS
+    - Friday 26 Sep (3 days ago) — SPP, 3800m, FR — EVF / catch, easy to fast
+      Theme: SPP Week 3 — Freestyle catch mechanics / aerobic development
+      Main set: 3x (4 x 100 @ 1:25 strong, 200 pull @ 3:00 moderate); 8 x 50 @ 1:00 odds fast evens easy
+      Feedback: too hard — "half the group missed the 1:25s"
+    - Wednesday 24 Sep (5 days ago) — SPP, 3500m, BK, easy to strong
+      Main set: 6 x 200 @ 3:10 as 50 drill [Single Arm] / 150 swim moderate
+      Feedback: none
+
+Each entry gives the day and date, how many days before today's session it was, phase,
+volume, stroke focus (with technical focus after an em dash, if any) and intensity range,
+then optional `Theme:` and `Main set:` lines, then `Feedback:` from the coach after the
+practice — a label, optionally followed by ` — "coach's note"`.
+
+How to use it — a light touch:
+- **Today's parameters always win.** SESSION PARAMETERS, STROKE & INTENSITY, SECTION STRUCTURE,
+  DESIGN FLAGS and DRILL NOTES are never changed by recent sessions: not volume, time, phase,
+  stroke focus, intensity range, sections, flags or drill picks.
+- **Don't repeat recent main sets.** Do not repeat a main set listed in RECENT SESSIONS: change
+  at least one of repeat distance, set format (straight / broken / circuit / descending /
+  ladder) or equipment. If today's stroke focus matches a recent session, also use different
+  drills from that session where DRILL NOTES allow.
+- **Day after a hard session.** If the most recent session was 1 day ago and its intensity range
+  ended at `fast`, `sprint` or `all out`, keep today's highest-intensity work short and late in
+  the main set (still within today's intensity range).
+- **Feedback labels:**
+  - `worked` — this kind of set suited the group; similar structures are fine on a different
+    day with a different stroke or distance.
+  - `too hard` — for similar sets today, use more generous sendoffs (about +5 sec per 100)
+    or fewer reps.
+  - `too easy` — for similar sets today, tighten sendoffs (about −5 sec per 100) or add reps.
+  - `changed` — the coach edited that workout before swimming it; avoid that main-set format today.
+  - `didn't work` (older entries) — avoid that main-set format today.
+  - `none` — no signal; use only for variety.
+  - A quoted note is the coach's own words. Treat it as a preference for today's design
+    where relevant.
+- Never mention recent sessions in Part 1 or Part 3. Part 2 may refer to them only in
+  **Week context** (3.3).
 
 ---
 
@@ -206,6 +254,9 @@ The corrected figures must be carried into Part 3.
 **Intensity distribution** — one or two sentences, plain prose
 
 **Technical emphasis** — one sentence
+
+**Week context** — one sentence on how today differs from the recent sessions; only when the
+RECENT SESSIONS block is present — omit this line entirely otherwise
 
 **Active design flag notes** — one line per active flag; omit if none
 
@@ -426,6 +477,7 @@ Multiple flags apply simultaneously.
 - [ ] Intensity stays within specified range
 - [ ] All active design flags applied
 - [ ] Time-block sections rendered as placeholders only
+- [ ] If RECENT SESSIONS is present: main set does not repeat a recent main set; feedback applied
 - [ ] All drills from `references/drills.md`
 - [ ] If DRILL NOTES is present: included drills present; excluded drills absent
 - [ ] All formatting matches Section 5 in both Part 1 and Part 3
