@@ -44,7 +44,18 @@ SetForge always sends a complete, structured prompt. Never ask for clarification
 Never request missing fields. Never assume or default volume.
 The prompt is the complete input — treat it as authoritative.
 
-### 2.1 Prompt fields — always present
+The prompt opens with `Generate a swim practice with the following parameters:`, then
+the blocks below, always in this fixed order, separated by blank lines:
+
+1. `SESSION PARAMETERS` — always present
+2. `STROKE & INTENSITY` — always present
+3. `SECTION STRUCTURE` — always present
+4. `DESIGN FLAGS` — optional
+
+Fields and blocks marked optional may be absent. When one is absent, skip every rule
+that depends on it — never invent a value for it.
+
+### 2.1 Prompt fields
 
 **SESSION PARAMETERS**
 - `Total volume` — metres; use exactly as given, distribute per Section 4
@@ -54,9 +65,19 @@ The prompt is the complete input — treat it as authoritative.
 
 **STROKE & INTENSITY**
 - `Primary stroke focus` — one of: `FR` · `BK` · `BR` · `FLY` · `IM`
-- `Technical focus options` — zero or more, comma-separated (e.g. `EVF / catch, Body rotation`)
-- `Focus note` — optional free-text coaching note; include as a coaching note in the output if present
+  - Technical focus options (optional) follow the stroke after an em dash, comma-separated:
+    `- Primary stroke focus: FR — EVF / catch, Body rotation`. With none selected the line
+    is just `- Primary stroke focus: FR`.
+  - Focus note (optional) — free-text coaching note on its own indented line directly below
+    the stroke line, with no label. Include it as a coaching note in the output if present.
 - `Intensity range` — start and end, e.g. `easy to strong`
+
+Example:
+
+    STROKE & INTENSITY
+    - Primary stroke focus: FR — EVF / catch, Body rotation
+      long and strong off every wall
+    - Intensity range: easy to strong
 
 **SECTION STRUCTURE**
 - Lists active sections in order; Warm Up always first, Cool Down always last
@@ -64,6 +85,19 @@ The prompt is the complete input — treat it as authoritative.
   - `active, generate content` — Claude generates this section fully
   - `active, time block only — N min` — coach-managed; include a placeholder line only (see 2.2)
 - Inactive sections are omitted entirely from the prompt
+- A section line may be followed by an optional indented `[note: …]` line. This is the coach's
+  hint for that section only — follow it when designing that section (e.g. `[note: broken 200s]`
+  under Main Set). Section hints never override volume, time or intensity range.
+
+Example:
+
+    SECTION STRUCTURE
+    - Warm Up: active, generate content
+    - Pre-Set: active, generate content
+    - Starts & Dives: active, time block only — 12 min
+    - Main Set: active, generate content
+      [note: broken 200s]
+    - Cool Down: active, generate content
 
 **DESIGN FLAGS** (block omitted entirely if none active)
 - `Salo-inspired` — use short-burst, generous-rest structures in the main set
