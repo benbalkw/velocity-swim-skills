@@ -69,6 +69,8 @@ that depends on it — never invent a value for it.
   in Coaching flags.
 - `Total time` — minutes; hard limit (already adjusted for time-block sections)
 - `Training phase` — one of: `GPP` · `SPP` · `Competition` · `Taper`
+- `Phase week` — optional; a whole number (e.g. `- Phase week: 3`), the week within the
+  current phase. Used only in the workout header (5.6). If absent, the header has no week.
 - `Day` — one of: `Monday` · `Tuesday` · `Wednesday` · `Friday` · `Saturday`
 
 **STROKE & INTENSITY**
@@ -336,7 +338,12 @@ First line of Part 1 and Part 3:
 
       [Phase Week N — Primary technical focus / zone name]
 
-Example: `[SPP Week 3 — Freestyle catch mechanics / aerobic development]`
+- `Phase` is the `Training phase` from the prompt.
+- `Week N` uses the `Phase week` value from the prompt. If `Phase week` is absent, omit
+  `Week N` entirely: `[Phase — Primary technical focus / zone name]`. Never invent a week number.
+
+Example with `Phase week: 3`: `[SPP Week 3 — Freestyle catch mechanics / aerobic development]`
+Example without `Phase week`: `[SPP — Freestyle catch mechanics / aerobic development]`
 Use zone names (`aerobic base`, `aerobic development`, `race pace`, `speed endurance`),
 not zone codes.
 
