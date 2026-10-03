@@ -488,7 +488,7 @@ Multiple flags apply simultaneously.
 - [ ] `---FINAL-WORKOUT---` separator on its own line after Part 2
 - [ ] Part 3 present — final corrected workout, bracket header to Cool Down
 - [ ] Part 3 figures match Part 2 final audited totals exactly
-- [ ] Final volume within ±100m of `Total volume` (with `Salo-inspired`: at or under, shortfall stated)
+- [ ] Final volume within ±100m of `Total volume` (with `Salo-inspired`: at or under, shortfall stated; after an adjustment, per 3.8)
 - [ ] Estimated session time does not exceed the `Total time` hard cap
 - [ ] Main set mixes primary stroke with freestyle and/or choice
 - [ ] Intensity stays within specified range
