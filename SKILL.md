@@ -51,6 +51,7 @@ the blocks below, always in this fixed order, separated by blank lines:
 2. `STROKE & INTENSITY` — always present
 3. `SECTION STRUCTURE` — always present
 4. `DESIGN FLAGS` — optional
+5. `DRILL NOTES` — optional
 
 Fields and blocks marked optional may be absent. When one is absent, skip every rule
 that depends on it — never invent a value for it.
@@ -114,6 +115,22 @@ Example:
 - `Descending intensity` — build from lower to higher intensity across the main set
 - `Building intensity` — structure each repeat or sub-set as a build
 - `Drill-heavy` — increase drill proportion in warm-up and pre-set; S and A tiers only
+
+**DRILL NOTES** (block omitted entirely if the coach picked no drills; either line may be omitted)
+- `Include` — comma-separated drill names from `references/drills.md`. Use each listed drill
+  at least once, in a section where it fits (Warm Up, Pre-Set, Drill Work). Coach inclusion
+  overrides tier rules: a listed C-tier drill is allowed, and `Drill-heavy`'s S/A restriction
+  does not apply to listed drills.
+- `Exclude` — comma-separated drill names. Do not use these drills anywhere in the session.
+- If a name does not match a drill in `references/drills.md`, ignore it and mention it under
+  Coaching flags.
+- When the block is absent, select drills normally per 6.1.
+
+Example:
+
+    DRILL NOTES
+    - Include: Fist Drill, Heel Tag
+    - Exclude: Zipper Drill
 
 ### 2.2 Time-block sections
 
@@ -354,6 +371,8 @@ not zone codes.
 ### 6.1 Drill selection
 - Only approved drills from `references/drills.md`
 - Priority: S-tier → A-tier → B-tier situationally; C-tier excluded
+- DRILL NOTES (2.1), when present, override the tier priority above: included drills are
+  always used, excluded drills never are
 - Conservative sendoffs on drill sets (add 15–20 sec beyond expected swim time)
 - `Drill-heavy` flag: increase drill proportion; S/A tiers only
 
@@ -408,6 +427,7 @@ Multiple flags apply simultaneously.
 - [ ] All active design flags applied
 - [ ] Time-block sections rendered as placeholders only
 - [ ] All drills from `references/drills.md`
+- [ ] If DRILL NOTES is present: included drills present; excluded drills absent
 - [ ] All formatting matches Section 5 in both Part 1 and Part 3
 - [ ] No zone codes anywhere in the response
 - [ ] No code fences in Part 1 or Part 3

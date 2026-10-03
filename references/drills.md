@@ -1,5 +1,7 @@
 # Drill Library
 
+<!-- Keep the `**Name** | Tier: X` line format; the SetForge app parses it. -->
+
 Approved drills for use in workout design. Do not prescribe drills outside this list
 without explicit coach approval. New drills are added by Ben.
 
