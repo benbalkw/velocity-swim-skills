@@ -73,7 +73,8 @@ that depends on it — never invent a value for it.
 - `Total time` — minutes; hard limit (already adjusted for time-block sections)
 - `Training phase` — one of: `GPP` · `SPP` · `Competition` · `Taper`
 - `Phase week` — optional; a whole number (e.g. `- Phase week: 3`), the week within the
-  current phase. Used only in the workout header (5.6). If absent, the header has no week.
+  current phase. Used only in the workout header (5.6). If absent, the header has no week —
+  do not work one out from RECENT SESSIONS or anything else.
 - `Day` — one of: `Monday` · `Tuesday` · `Wednesday` · `Friday` · `Saturday`
 
 **STROKE & INTENSITY**
@@ -128,15 +129,15 @@ Example:
   Coaching flags.
 - When the block is absent, select drills normally per 6.1.
 
-**RECENT SESSIONS** (block omitted entirely if there is no recent history)
-- Practices swum in the past 7 days, most recent first — context only; see 2.4
-- When the block is absent, design the session from today's parameters alone.
-
 Example:
 
     DRILL NOTES
     - Include: Fist Drill, Heel Tag
     - Exclude: Zipper Drill
+
+**RECENT SESSIONS** (block omitted entirely if there is no recent history)
+- Practices swum in the past 7 days, most recent first — context only; see 2.4
+- When the block is absent, design the session from today's parameters alone.
 
 ### 2.2 Time-block sections
 
@@ -339,11 +340,12 @@ After a workout has been generated, the coach may send a follow-up message in th
 conversation asking for a change (e.g. "main set's too long, cut 300").
 
 - Apply only the requested change. Keep everything else from the previous final workout
-  (Part 3) unless it must change to stay valid (formatting, time cap, intensity range,
-  drill rules).
+  (Part 3) unless it must change to stay valid (Commit formatting, intensity range, drill
+  rules, time cap).
 - The coach's request wins over the original `Total volume` and `Total time` when they
-  conflict. The Part 2 volume audit and summary report the new totals.
-- Always return the full three-part output again, exactly per this section: Part 1,
+  conflict (e.g. "add 400" even if it runs past the time). Otherwise both still apply.
+  The Part 2 volume audit and summary report the new total volume and estimated time.
+- Always return the full three-part output again, exactly per Section 3: Part 1,
   `---SESSION-SUMMARY---`, Part 2, `---FINAL-WORKOUT---`, Part 3. No preamble,
   no reply to the coach outside the three parts. Note the change made under Coaching flags.
 
