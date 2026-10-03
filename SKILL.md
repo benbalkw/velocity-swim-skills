@@ -14,9 +14,10 @@ description: >
 ## Overview
 
 This skill governs all workout generation for SetForge — a native iPhone app that sends
-a fully formed, one-shot prompt to Claude. There is no conversation loop. The output goes
-directly to a display view and then to Commit Swimming. Everything must be correct on the
-first pass.
+a fully formed prompt to Claude. Most requests are one-shot. The coach may follow up in the
+same conversation with an adjustment request (see 3.8). The output goes directly to a display
+view and then to Commit Swimming. Every response must be correct on its own — never
+rely on a follow-up to fix it.
 
 Read this file fully. Then read the reference files as directed below.
 
@@ -331,6 +332,20 @@ cap is non-negotiable — do not output a workout that exceeds it.
 - No budget calculation visible anywhere in the response
 - No zone codes anywhere in any part
 - No code fences in Part 1 or Part 3
+
+### 3.8 Adjustment turns
+
+After a workout has been generated, the coach may send a follow-up message in the same
+conversation asking for a change (e.g. "main set's too long, cut 300").
+
+- Apply only the requested change. Keep everything else from the previous final workout
+  (Part 3) unless it must change to stay valid (formatting, time cap, intensity range,
+  drill rules).
+- The coach's request wins over the original `Total volume` and `Total time` when they
+  conflict. The Part 2 volume audit and summary report the new totals.
+- Always return the full three-part output again, exactly per this section: Part 1,
+  `---SESSION-SUMMARY---`, Part 2, `---FINAL-WORKOUT---`, Part 3. No preamble,
+  no reply to the coach outside the three parts. Note the change made under Coaching flags.
 
 ---
 
