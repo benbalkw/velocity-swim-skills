@@ -11,6 +11,8 @@ description: >
 
 # SetForge Swim Workout Skill
 
+<!-- SetForge capability: graphical-workout-v1 -->
+
 ## Overview
 
 This skill governs all workout generation for SetForge — a native iPhone app that sends
@@ -76,9 +78,27 @@ that depends on it — never invent a value for it.
   current phase. Used only in the workout header (5.6). If absent, the header has no week —
   do not work one out from RECENT SESSIONS or anything else.
 - `Day` — one of: `Monday` · `Tuesday` · `Wednesday` · `Friday` · `Saturday`
+- `Practice style` — optional: `Balanced`, `Distance`, or `Salo-inspired`. This selects one
+  practice style; `Drill-heavy` remains an independent modifier in DESIGN FLAGS.
+  `Balanced` follows the selected phase, stroke and effort instructions without adding a
+  special set structure. `Distance` emphasizes sustained aerobic work, longer repeats,
+  controlled pacing and technique under fatigue, within the given volume/time and effort
+  profile; it never increases the requested volume. `Salo-inspired` applies the short-burst,
+  generous-rest rules in 6.2 and the volume-as-ceiling exception in 2.1, even when no legacy
+  Salo design flag is sent. When this field is absent, preserve existing flag behavior.
 
 **STROKE & INTENSITY**
-- `Primary stroke focus` — one of: `FR` · `BK` · `BR` · `FLY` · `IM`
+- `Primary stroke focus` — one of: `FR` · `BK` · `BR` · `FLY` · `IM`, or the optional
+  family values `Long-Axis (FR + BK)` and `Short-Axis (FLY + BR)`.
+  - Long-Axis uses both freestyle and backstroke; Short-Axis uses both butterfly and
+    breaststroke. Choose their balance from phase, technical focus, effort and set needs;
+    do not silently select only one member or assume an equal split. Other strokes may
+    still appear where the established mixed-main-set rule calls for them.
+  - Shared Long-Axis focuses: Rotation, Body alignment, Catch connection, Kick connection.
+    Shared Short-Axis focuses: Timing, Body line, Kick connection, Streamline. Interpret
+    these appropriately for each stroke rather than prescribing identical mechanics.
+    Select drills from the existing approved constituent-stroke groups, preserving
+    DRILL NOTES overrides; no new drill names or drill-library headings are implied.
   - Technical focus options (optional) follow the stroke after an em dash, comma-separated:
     `- Primary stroke focus: FR — EVF / catch, Body rotation`. With none selected the line
     is just `- Primary stroke focus: FR`.
@@ -102,6 +122,31 @@ Example:
 - A section line may be followed by an optional indented `[note: …]` line. This is the coach's
   hint for that section only — follow it when designing that section (e.g. `[note: broken 200s]`
   under Main Set). Section hints never override volume, time or intensity range.
+- A generated section may also carry optional indented graphical-design fields:
+  - `[target: N% of swim volume]` — its strong percentage target, relative to the supplied
+    `Total volume`, excluding time blocks. Use it instead of the generic Section 4
+    proportion for that section. Convert to metres before designing sets; round to
+    sensible repeat distances without pretending the target is an exact repeat count.
+    When targets are supplied for every generated section they total 100%; do not
+    redistribute them because a time block appears. The app already adjusted Total volume.
+    If only some sections have targets, retain those and allocate the remainder across
+    untargeted generated sections using Section 4.
+  - `[effort: beginning=moderate; end=strong]`, or
+    `[effort: beginning=moderate; middle=strong; end=moderate]` — effort progression
+    within this section at its beginning, optional midpoint and end. Values are the
+    existing six intensity descriptors. These points are coaching intent, not individual
+    repeats or a demand for uninterrupted effort. Include appropriate recovery, easy
+    repeats and rest within sets. A high plateau describes work-bout effort; it never
+    means swimming the whole section at sprint intensity. Preserve the high-intensity
+    limits and minimum sprint work:rest from 6.4.
+  - `[legacy instruction: build within repeats]` — optional compatibility instruction
+    retained from an older saved design. Build within individual repeats or sub-sets
+    while respecting the displayed section effort progression. It is not an extra
+    session-wide build and must not override section target, time, drill or effort rules.
+- Graphical-design fields are input instructions only: never copy these bracket fields
+  into the workout output. Time blocks have no target or effort fields.
+- If no graphical fields are present, preserve the existing Section 4 allocation and
+  global intensity/legacy-flag behavior exactly. Never invent absent graphical values.
 
 Example:
 
@@ -164,6 +209,17 @@ Use these words only in output — never use zone codes (A-I, R-III, etc.):
 
 The `Intensity range` field defines the session floor and ceiling. Arc across that range —
 do not sit at the ceiling throughout.
+
+When optional section effort profiles (2.1) are present, they explicitly define progression
+for those sections and override any generic global-arc or style-suggested shape there.
+The global range is then the minimum/maximum envelope of the section profiles, not another
+start-to-finish instruction. Section curves are independent: Main Set may end fast and
+Cool Down begin easy immediately. Do not force adjacent endpoint values to match.
+When a section has no effort profile, use the existing global guidance for that section.
+A practice style still governs set structure, but must not erase a manually specified
+curve. If a curve/style combination cannot fit the time, recovery or high-intensity
+limits, preserve those constraints and explain the necessary compromise under Coaching
+flags. An optional fast peak in a Distance practice does not cancel its aerobic emphasis.
 
 ### 2.4 Recent sessions
 
@@ -267,7 +323,8 @@ RECENT SESSIONS block is present — omit this line entirely otherwise
 ### 3.4 Pre-generation budget allocation
 
 Before writing Part 1, calculate the metre budget for each section silently.
-Use the proportions from Section 4 adjusted for the sections present in the prompt.
+Use explicit section percentage targets (2.1) where present; otherwise use the
+proportions from Section 4 adjusted for the sections present in the prompt.
 
 This calculation is silent — do not write it, do not label it, do not output
 it in any form. It must not appear anywhere in the response.
@@ -276,8 +333,11 @@ The format to use internally:
 
   Warm Up [X]m / [Section] [X]m / Main Set [X]m / Cool Down [X]m / Total [X]m
 
-The total must equal the `Total volume` specified in the prompt (with `Salo-inspired`,
-it may be lower — see 2.1).
+The total must equal the `Total volume` specified in the prompt (with the `Salo-inspired`
+style or legacy flag, it may be lower — see 2.1). With Salo, preserve requested section
+proportions as practical in the lower actual total rather than adding low-quality metres
+to reach a percentage-derived metre target. Report both volume and allocation departures
+in the summary. The hard time cap remains above section volume targets.
 
 ### 3.5 Part 3 — Final Corrected Workout
 
@@ -416,6 +476,13 @@ Sendoffs go on individual lines inside the circuit, not on the header line.
 - No extra blank lines between sets within a section
 - One blank line between sections
 - Headings must not contain `kick`, `pull`, or energy system names unbracketed
+- When optional graphical section targets are present, preserve each supplied section
+  name exactly and use bracketed headings consistently: `[Warm Up]`, `[Kick]`, `[Pull]`,
+  `[Pre-Set]`, `[Drill Work]`, `[Starts & Dives]`, `[Turns & Transitions]`, `[Main Set]`,
+  `[Cool Down]`. Include only requested active sections, once each, in their supplied
+  order. Do not merge, rename, duplicate or invent sections. This lets the app compare
+  requested and generated section totals. Existing prompts without targets retain the
+  existing heading guidance above.
 
 ### 5.6 Workout header
 
@@ -445,7 +512,8 @@ not zone codes.
 - `Drill-heavy` flag: increase drill proportion; S/A tiers only
 
 ### 6.2 Sprint Salo
-Active when `Salo-inspired` flag is present:
+Active when the optional `Practice style: Salo-inspired` is present, or the legacy
+`Salo-inspired` flag is present with no Practice style:
 - Short repetitions (15–50m), generous rest (1:2 minimum, typically 1:3+)
 - Quality over volume — not a default
 - See `references/set-templates.md` for Sprint Salo patterns
@@ -459,7 +527,13 @@ Active when `Salo-inspired` flag is present:
 | `Building intensity`  | Each repeat / sub-set is a build                    |
 | `Drill-heavy`         | Higher drill proportion; S/A tier only              |
 
-Multiple flags apply simultaneously.
+Multiple flags apply simultaneously for legacy prompts. With an optional Practice style,
+that single style owns Balanced/Distance/Salo structure and the Salo ceiling policy;
+Drill-heavy remains independent. Optional explicit section effort profiles supersede
+Building/Descending intensity as section-envelope instructions. A legacy `Building
+intensity` flag or `[legacy instruction: build within repeats]` still requests builds
+inside repeats, within those profiles, until the coach replaces it. In the absence of
+new optional fields, all previous flag semantics remain unchanged.
 
 ### 6.4 Volume and work:rest
 - Volume from the app only — never assumed
